@@ -1,2 +1,2 @@
-# strwhat-media
-strawhat_media_website
+# strawhatmedia
+strawhatmedia-web

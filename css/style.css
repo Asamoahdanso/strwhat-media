@@ -665,12 +665,12 @@
         }
 
         .calendar-header button {
-            /* background: none; 2*/ */
+            background: fixed;
             border: none;
             font-size: 1.2rem;
             cursor: pointer;
-            color: var(--dark-real);
-            transition: color 0.3s ease;
+            /* color: var(--dark-real); */
+            /* transition: color 0.3s ease; */
         }
 
         .calendar-header button:hover {
