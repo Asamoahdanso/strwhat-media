@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine ❤️</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #ffe6eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.container {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    z-index: 2;
+}
+
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    margin: 10px;
+}
+
+#yesBtn { background: green; }
+#noBtn { background: red; }
+
+#shareBtn { background: #007bff; }
+
+#response {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#countdown {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    bottom: -10px;
+    font-size: 20px;
+    animation: floatUp linear forwards;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-110vh); opacity: 0; }
+}
+
+/* Fireworks canvas */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="container" id="mainPage">
+    <h3>
+        Florence Naadei Neequaye,<br>
+        Will you be my Valentine? ❤️
+    </h3>
+
+    <div id="countdown"></div>
+
+    <button id="yesBtn">YES</button>
+    <button id="noBtn">NO</button>
+
+    <div id="response"></div>
+
+    <button id="shareBtn">Share ❤️</button>
+</div>
+
+<div class="container" id="lovePage" style="display:none;">
+    <h2>❤️ My Valentine ❤️</h2>
+    <p>
+        Florence, you make every day brighter,
+        every smile warmer, and every moment special.
+        Thank you for being you.
+        I can't wait to spend this Valentine
+        and many more with you.
+    </p>
+    <h3>❤️ I Love You ❤️</h3>
+</div>
+
+<audio id="music" loop>
+<source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
+</audio>
+
+<script>
+/* MUSIC */
+const music = document.getElementById("music");
+document.addEventListener("click", () => {
+    music.play().catch(()=>{});
+}, { once: true });
+
+/* COUNTDOWN */
+function updateCountdown(){
+    const valDay = new Date("Feb 14, 2026 00:00:00").getTime();
+    const now = new Date().getTime();
+    const diff = valDay - now;
+
+    const d = Math.floor(diff/(1000*60*60*24));
+    const h = Math.floor((diff%(1000*60*60*24))/(1000*60*60));
+    const m = Math.floor((diff%(1000*60*60))/(1000*60));
+
+    document.getElementById("countdown").innerHTML =
+        `Countdown to Valentine’s Day: ${d}d ${h}h ${m}m`;
+}
+setInterval(updateCountdown, 60000);
+updateCountdown();
+
+/* FLOATING HEARTS */
+setInterval(()=>{
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random()*100+"vw";
+    heart.style.animationDuration = 4+Math.random()*4+"s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),8000);
+},500);
+
+/* YES BUTTON */
+let size = 18;
+let clicks = 0;
+
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+
+yesBtn.onclick = () => {
+    clicks++;
+    size += 6;
+    yesBtn.style.fontSize = size+"px";
+
+    if(clicks < 3){
+        response.innerHTML = "Are you sure? ❤️";
+    } else if(clicks < 5){
+        response.innerHTML = "Really really sure?";
+    } else {
+        response.innerHTML = "Best Valentine ever!";
+        noBtn.style.display="none";
+        startFireworks();
+        setTimeout(showLovePage,3000);
+    }
+};
+
+/* RUNNING NO BUTTON */
+function moveNo(){
+    const box = document.querySelector(".container");
+    const x = Math.random()*(box.clientWidth-80);
+    const y = Math.random()*(box.clientHeight-40);
+
+    noBtn.style.position="absolute";
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
+}
+noBtn.onmouseover = moveNo;
+noBtn.onclick = moveNo;
+
+/* SHARE BUTTON */
+document.getElementById("shareBtn").onclick = async ()=>{
+    if(navigator.share){
+        await navigator.share({
+            title:"Be My Valentine ❤️",
+            text:"Will you be my Valentine?",
+            url:location.href
+        });
+    } else {
+        alert("Copy link and share!");
+    }
+};
+
+/* LOVE PAGE */
+function showLovePage(){
+    document.getElementById("mainPage").style.display="none";
+    document.getElementById("lovePage").style.display="block";
+}
+
+/* FIREWORKS */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let particles = [];
+
+function startFireworks(){
+    setInterval(()=>{
+        for(let i=0;i<80;i++){
+            particles.push({
+                x:innerWidth/2,
+                y:innerHeight/2,
+                dx:(Math.random()-0.5)*6,
+                dy:(Math.random()-0.5)*6,
+                life:60
+            });
+        }
+    },500);
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+        ctx.fillStyle="orange";
+        ctx.fillRect(p.x,p.y,3,3);
+        p.x+=p.dx;
+        p.y+=p.dy;
+        p.life--;
+    });
+    particles=particles.filter(p=>p.life>0);
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
